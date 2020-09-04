@@ -1,26 +1,40 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Uppy from '@uppy/core';
+import Tus from '@uppy/tus';
+import { DragDrop } from '@uppy/react';
+import '@uppy/core/dist/style.css';
+import '@uppy/drag-drop/dist/style.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const uppy = new Uppy({
+	meta: { type: 'avatar' },
+	restrictions: { maxNumberOfFiles: 1 },
+	autoProceed: true
+});
 
-export default App;
+uppy.use(Tus, { endpoint: '/upload' });
+
+uppy.on('complete', (result) => {
+	console.log(result);
+});
+
+const AvatarPicker = ({ currentAvatar }) => {
+	return (
+		<div>
+			<img src={currentAvatar} alt="Current Avatar" />
+			<DragDrop
+				uppy={uppy}
+				locale={{
+					strings: {
+						// Text to show on the droppable area.
+						// `%{browse}` is replaced with a link that opens the system file selection dialog.
+						dropHereOr: 'Drop here or %{browse}',
+						// Used as the label for the link that opens the system file selection dialog.
+						browse: 'browse'
+					}
+				}}
+			/>
+		</div>
+	);
+};
+
+export default AvatarPicker;
